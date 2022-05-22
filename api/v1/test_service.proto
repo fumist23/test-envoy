@@ -4,8 +4,14 @@ option go_package = "github.com/fumist23/test-envoy/api/v1";
 
 package test;
 
+import "google/api/annotations.proto";
+
 service Greeter {
-  rpc SayHello(HelloRequest) returns (HelloResponse) {}
+  rpc SayHello(HelloRequest) returns (HelloResponse) {
+    option (google.api.http) = {
+      get : "/say"
+    };
+  }
 }
 
 message HelloRequest { string name = 1; }
