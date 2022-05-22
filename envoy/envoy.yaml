@@ -6,7 +6,7 @@ static_resources:
   listeners:
   - name: listener1
     address:
-      socket_address: {address:0.0.0.0, port_value: 51051}
+      socket_address: {address: 0.0.0.0, port_value: 51051}
     filter_chains:
     - filters:
       - name: envoy.filters.network.http_connection_manager
@@ -26,33 +26,32 @@ static_resources:
           - name: envoy.filters.http.grpc_json_transcoder
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder
-              proto_descriptor: "api/v1/test.pb"
+              proto_descriptor: "/etc/envoy/test_service.pb"
               services: ["test.Greeter"]
               print_options:
                 add_whitespace: true
                 always_print_primitive_fields: true
-                always_print_enums_as_inits: false
                 preserve_proto_field_names: false
-        - name: envoy.filters.http.router
-          typed_config:
-            "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
 
   clusters:
   - name: grpc
-  type: LOGICAL_DNS
-  lb_policy: ROUND_ROBIN
-  dns_lookup_family: V4_ONLY
-  typed_extension_protocol_options:
-    envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
-      "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
-      explicit_http_config:
-        http2_protocol_options: {}
-  load_assignment:
-    cluster_name: grpc
-    endpoints:
-    - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: host.docker.internal
-                port_value: 50051
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    dns_lookup_family: V4_ONLY
+    typed_extension_protocol_options:
+      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+        "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+        explicit_http_config:
+          http2_protocol_options: {}
+    load_assignment:
+      cluster_name: grpc
+      endpoints:
+      - lb_endpoints:
+          - endpoint:
+              address:
+                socket_address:
+                  address: 192.168.43.37 # IPアドレスを指定する。
+                  port_value: 50051
